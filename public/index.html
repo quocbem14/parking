@@ -1,35 +1,45 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>RFID Parking Management</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Parking Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>🚗 Smart Parking Dashboard</h1>
+
   <div class="container">
-    <h1>RFID Parking Management System</h1>
 
     <section class="uid-section">
-      <h2>Manage UIDs</h2>
-      <div class="form-group">
-        <input type="text" id="uidInput" placeholder="Enter UID" />
-        <select id="uidStatus">
-          <option value="valid">Valid</option>
-          <option value="invalid">Invalid</option>
-        </select>
-        <button onclick="addUID()">Add UID</button>
-      </div>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search UID...">
-        <button onclick="searchUID()">Search</button>
-        <button onclick="clearSearch()">Clear</button>
-      </div>
+      <h2>🔐 UID Management</h2>
+      <input type="text" id="uidInput" placeholder="Nhập UID mới">
+      <select id="stateSelect">
+        <option value="VALID">VALID</option>
+        <option value="BLOCK">BLOCK</option>
+      </select>
+      <button onclick="addUID()">Thêm UID</button>
       <ul id="uidList"></ul>
     </section>
 
-    <section class="parking-status">
-      <h2>Parking Lot Logs</h2>
-      <table>
+    <section class="slot-section">
+      <h2>🅿️ Slot Status</h2>
+      <div id="slotStatus" class="slots-grid">
+        <div class="slot" id="slot0">Slot 1: Unknown</div>
+        <div class="slot" id="slot1">Slot 2: Unknown</div>
+        <div class="slot" id="slot2">Slot 3: Unknown</div>
+        <div class="slot" id="slot3">Slot 4: Unknown</div>
+      </div>
+    </section>
+
+    <section class="log-section">
+      <h2>📜 Access Logs</h2>
+      <div style="margin-bottom: 15px;">
+        <input type="text" id="logSearchInput" placeholder="Tìm kiếm log (UID, Status, In/Out, Slot Trống)">
+        <button onclick="clearLogSearch()">Xóa</button>
+      </div>
+      <table id="logTable">
         <thead>
           <tr>
             <th>Day</th>
@@ -40,9 +50,10 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody id="logTable"></tbody>
+        <tbody></tbody>
       </table>
     </section>
+
   </div>
 
   <script src="script.js"></script>
