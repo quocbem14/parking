@@ -22,10 +22,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 const readJSON = (path) => {
   try {
     return JSON.parse(fs.readFileSync(path, 'utf8'));
-  } catch {
+  } catch (err) {
+    console.error(`Error reading ${path}:`, err);
     return [];
   }
 };
+
 const writeJSON = (path, data) =>
   fs.writeFileSync(path, JSON.stringify(data, null, 2));
 
@@ -40,10 +42,16 @@ app.get('/uids', (req, res) => {
 // Add new UID
 app.post('/uids', (req, res) => {
   const uids = readJSON(uidPath);
-  const { uid, state } = req.body;
-  if (!uid || !state) return res.status(400).send('UID and state are required');
+  let { uid, state } = req.body;
+
+  if (!uid || !state)
+    return res.status(400).send('UID and state are required');
+
+  uid = uid.toUpperCase();
+
   if (uids.find((u) => u.uid === uid))
     return res.status(409).send('UID already exists');
+
   uids.push({ uid, state, time: new Date().toISOString() });
   writeJSON(uidPath, uids);
   res.status(201).send('UID added');
@@ -67,17 +75,18 @@ app.get('/logs', (req, res) => {
 // Add log from ESP32 or Web
 app.post('/logs', (req, res) => {
   let logs = readJSON(logPath);
-  const { uid, status, inout = '', slot = '', time, day } = req.body;
-  if (!uid || !status)
+  const logData = req.body;
+
+  console.log('Received data:', logData); // Debug payload nhận được
+
+  if (!logData.uid || !logData.status)
     return res.status(400).json({ error: 'UID and status are required' });
 
+  // Lưu toàn bộ payload và thêm các trường time, day nếu cần
   const log = {
-    uid,
-    status,
-    inout,
-    slot,
-    time: time || new Date().toISOString(),
-    day: day || new Date().toISOString().slice(0, 10),
+    ...logData,
+    time: logData.time || new Date().toISOString(),
+    day: logData.day || new Date().toISOString().slice(0, 10),
   };
 
   logs.push(log);
@@ -87,5 +96,5 @@ app.post('/logs', (req, res) => {
 
 // Start server
 app.listen(port, () =>
-  console.log(`✅ Server running at http://localhost:${port}`)
+  console.log(`✅ Server running at http://192.168.1.222:${port}`)
 );
