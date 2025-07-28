@@ -1,65 +1,173 @@
+/* ========== Base ========== */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #1e1e2f;
-  color: #f0f0f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #f1f1f1;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1 {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 2.5rem;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  color: white;
+  margin-bottom: 20px;
 }
 
 .container {
-  max-width: 960px;
-  margin: auto;
-  background: #2c2c3e;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 50px;
+}
+
+/* ========== Sections ========== */
+section {
+  background-color: #1e1e1e;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
-h1, h2 {
-  text-align: center;
-  color: #90caf9;
+section h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #00c6ff;
+  padding-bottom: 5px;
 }
 
-input, select, button {
+/* ========== UID Management ========== */
+.uid-section input,
+.uid-section select {
   padding: 10px;
-  margin: 5px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: none;
+  margin-right: 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #2a2a2a;
+  color: #f1f1f1;
 }
 
-button {
-  background: #4caf50;
+.uid-section button {
+  padding: 10px 15px;
+  background-color: #00c6ff;
   color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-button:hover {
-  background: #45a049;
+.uid-section button:hover {
+  background-color: #0072ff;
 }
 
-.uid-list {
+#uidList {
+  margin-top: 15px;
   list-style: none;
-  padding: 0;
+  padding-left: 0;
 }
 
-.uid-list li {
-  background: #3a3a4e;
-  margin: 4px 0;
-  padding: 8px;
+#uidList li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-table {
-  width: 100%;
-  margin-top: 10px;
-  border-collapse: collapse;
-  background: #3a3a4e;
+#uidList li button {
+  margin-left: 10px;
 }
 
-th, td {
+/* ========== Slot Status ========== */
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.slot {
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #2d2d2d;
+  text-align: center;
+  font-size: 1.1rem;
+  border-left: 5px solid #888;
+  transition: all 0.3s ease-in-out;
+}
+
+.slot.available {
+  border-left-color: #00e676;
+  background-color: #1b3c1b;
+}
+
+.slot.occupied {
+  border-left-color: #ff1744;
+  background-color: #3c1b1b;
+}
+
+/* ========== Access Logs ========== */
+.log-section input {
   padding: 10px;
+  margin-right: 10px;
+  border-radius: 6px;
   border: 1px solid #555;
+  background: #2a2a2a;
+  color: #f1f1f1;
+  width: 200px;
+}
+
+.log-section button {
+  padding: 10px 15px;
+  background-color: #00c6ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.log-section button:hover {
+  background-color: #0072ff;
+}
+
+
+
+#logTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#logTable thead {
+  background-color: #333;
+}
+
+#logTable th, #logTable td {
+  padding: 12px;
+  border: 1px solid #444;
   text-align: center;
 }
+
+#logTable tr:nth-child(even) {
+  background-color: #222;
+}
+
+#logTable tr:hover {
+  background-color: #333;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 600px) {
+  .slots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
+  
