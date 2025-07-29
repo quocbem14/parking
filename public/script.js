@@ -1,53 +1,78 @@
+const baseURL = 'https://your-app-name.onrender.com'; // Thay bằng URL Render thực tế
+
 let uidList = [];
 let logs = [];
 
 async function loadUIDs() {
-  const res = await fetch('/uids');
-  uidList = await res.json();
-  renderUIDs();
+  try {
+    const res = await fetch(`${baseURL}/uids`);
+    if (!res.ok) throw new Error(`Lỗi HTTP! Trạng thái: ${res.status}`);
+    uidList = await res.json();
+    renderUIDs();
+  } catch (err) {
+    console.error('Lỗi khi tải danh sách UID:', err);
+    alert('Không thể tải danh sách UID. Vui lòng kiểm tra kết nối hoặc server.');
+  }
 }
 
 async function loadLogs() {
   try {
-    const res = await fetch('/logs');
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const res = await fetch(`${baseURL}/logs`);
+    if (!res.ok) throw new Error(`Lỗi HTTP! Trạng thái: ${res.status}`);
     logs = await res.json();
-    console.log('Loaded logs:', logs); // Debug
+    console.log('Đã tải logs:', logs); // Debug
     renderLogs();
     updateSlotStatus();
   } catch (err) {
-    console.error('Error loading logs:', err);
+    console.error('Lỗi khi tải logs:', err);
+    alert('Không thể tải logs. Vui lòng kiểm tra kết nối hoặc server.');
   }
 }
 
 async function addUID() {
   const uid = document.getElementById('uidInput').value.trim();
   const state = document.getElementById('stateSelect').value;
-  if (!uid) return alert('Enter UID');
+  if (!uid) return alert('Vui lòng nhập UID');
 
   try {
-    const res = await fetch('/uids', {
+    const res = await fetch(`${baseURL}/uids`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uid, state })
     });
 
     if (res.status === 409) {
-      alert('UID already exists!');
+      alert('UID đã tồn tại!');
     } else if (res.ok) {
       document.getElementById('uidInput').value = '';
       await loadUIDs();
+      alert('UID đã được thêm thành công');
     } else {
-      alert('Error adding UID');
+      const error = await res.json();
+      alert(`Lỗi khi thêm UID: ${error.error || 'Không xác định'}`);
     }
   } catch (err) {
-    alert('Server error!');
+    console.error('Lỗi server:', err);
+    alert('Lỗi server khi thêm UID!');
   }
 }
 
 async function deleteUID(uid) {
-  await fetch(`/uids/${uid}`, { method: 'DELETE' });
-  await loadUIDs();
+  try {
+    const res = await fetch(`${baseURL}/uids/${uid}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      await loadUIDs();
+      alert(`UID ${uid} đã được xóa`);
+    } else {
+      const error = await res.json();
+      alert(`Lỗi khi xóa UID: ${error.error || 'Không xác định'}`);
+    }
+  } catch (err) {
+    console.error('Lỗi server:', err);
+    alert('Lỗi server khi xóa UID!');
+  }
 }
 
 function searchLogs() {
@@ -62,6 +87,10 @@ function clearLogSearch() {
 
 function renderUIDs() {
   const listEl = document.getElementById('uidList');
+  if (!listEl) {
+    console.error('Không tìm thấy phần tử uidList!');
+    return;
+  }
   listEl.innerHTML = '';
   uidList.forEach(u => {
     const li = document.createElement('li');
@@ -77,24 +106,24 @@ function renderUIDs() {
 function renderLogs(search = '') {
   const table = document.getElementById('logTable');
   if (!table) {
-    console.error('Table element not found!');
+    console.error('Không tìm thấy phần tử logTable!');
     return;
   }
   table.innerHTML = `
     <thead>
       <tr>
-        <th>Day</th>
+        <th>Ngày</th>
         <th>UID</th>
-        <th>In/Out</th>
-        <th>Time</th>
+        <th>Vào/Ra</th>
+        <th>Thời gian</th>
         <th>Slot Trống</th>
-        <th>Status</th>
+        <th>Trạng thái</th>
       </tr>
     </thead>
     <tbody></tbody>
   `;
   if (!logs || logs.length === 0) {
-    table.querySelector('tbody').innerHTML = '<tr><td colspan="6">No logs available</td></tr>';
+    table.querySelector('tbody').innerHTML = '<tr><td colspan="6">Không có log nào</td></tr>';
     return;
   }
 
@@ -141,15 +170,13 @@ function updateSlotStatus() {
   const latestLog = logs.length > 0 ? logs[logs.length - 1] : null;
   const slots = latestLog?.slots || { S1: false, S2: false, S3: false, S4: false };
 
-  document.getElementById('slot0').textContent = `Slot 1: ${slots.S1 ? 'Occupied' : 'Available'}`;
-  document.getElementById('slot1').textContent = `Slot 2: ${slots.S2 ? 'Occupied' : 'Available'}`;
-  document.getElementById('slot2').textContent = `Slot 3: ${slots.S3 ? 'Occupied' : 'Available'}`;
-  document.getElementById('slot3').textContent = `Slot 4: ${slots.S4 ? 'Occupied' : 'Available'}`;
-
   ['slot0', 'slot1', 'slot2', 'slot3'].forEach((id, index) => {
     const slot = document.getElementById(id);
-    slot.classList.remove('available', 'occupied');
-    slot.classList.add(slots[`S${index + 1}`] ? 'occupied' : 'available');
+    if (slot) {
+      slot.textContent = `Slot ${index + 1}: ${slots[`S${index + 1}`] ? 'Đã chiếm' : 'Trống'}`;
+      slot.classList.remove('available', 'occupied');
+      slot.classList.add(slots[`S${index + 1}`] ? 'occupied' : 'available');
+    }
   });
 }
 
@@ -157,4 +184,4 @@ loadUIDs();
 loadLogs();
 setInterval(loadLogs, 5000);
 
-document.getElementById('logSearchInput').addEventListener('input', searchLogs);
+document.getElementById('logSearchInput')?.addEventListener('input', searchLogs);
