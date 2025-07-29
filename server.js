@@ -142,5 +142,5 @@ app.post('/logs', (req, res) => {
 // Khởi động server
 app.listen(port, () => {
   console.log(`✅ Server đang chạy trên cổng ${port}`);
-  console.log(`Truy cập tại: https://your-app-name.onrender.com (thay bằng URL Render thực tế)`);
+  console.log(`Truy cập tại: https://parking-manager.onrender.com/ (thay bằng URL Render thực tế)`);
 });
