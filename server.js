@@ -96,5 +96,5 @@ app.post('/logs', (req, res) => {
 
 // Start server
 app.listen(port, () =>
-  console.log(`✅ Server running at http://192.168.1.222:${port}`)
+  console.log(`✅ Server running at http://172.20.10.2:${port}`)
 );
