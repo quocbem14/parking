@@ -1,4 +1,4 @@
-const baseURL = 'https://your-app-name.onrender.com'; // Thay bằng URL Render thực tế
+const baseURL = 'https://parking-manager.onrender.com/'; // Thay bằng URL Render thực tế
 
 let uidList = [];
 let logs = [];
